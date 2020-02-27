@@ -12,12 +12,12 @@ int main () {
    /* Initial memory allocation */
    str = (char *) malloc(15);
    strcpy(str, "cs197c");
-   printf("String = %s,  Address = %u\n", str, str);
+   printf("String = %s,  Address = %p\n", str, &str);
 
    /* Reallocating memory */
    str = (char *) realloc(str, 25);
    strcat(str, "computer science 197c");
-   printf("String = %s,  Address = %u\n", str, str);
+   printf("String = %s,  Address = %p\n", str, &str);
 
    int* arr;
 
@@ -36,10 +36,9 @@ int main () {
    free(arr);
 
    //TODO: remove the comment below after finished the functions
-   /*
-   int** arr_2d = build_2darr(5);
-   print_2darr(arr_2d);
-   */
+   	int n = 5;
+	int** arr_2d = build_2darr(n);
+   print_2darr(arr_2d,n);
 
    return(0);
 }
@@ -61,11 +60,23 @@ void print_arr(int *arr, int n){
    ]
 */
 int** build_2darr(int n){
-   //TODO
-   return NULL;
+	int** arr = (int**) malloc(n * sizeof(int*));
+	for(int i = 0; i < n; i++) {
+		arr[i] = (int*) malloc(i * sizeof(int));
+		for(int j = 0; j < i + 1; j++)
+			arr[i][j] = i;
+	}
+	return arr;
 }
 
 // print the 2d array you build previously
-void print_2darr(int** arr, int n){
-   //TODO
+void print_2darr(int** arr, int n) {
+	for(int i = 0; i < n; i++) {
+		putchar('[');
+		for(int j = 0; j < i + 1; j++) {
+			if(j == i) printf("%d", arr[i][j]);
+			else printf("%d,", arr[i][j]);
+		}
+		printf("]\n");
+	}
 }
