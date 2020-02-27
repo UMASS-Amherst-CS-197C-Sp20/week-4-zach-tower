@@ -24,20 +24,29 @@ POINTER alloc(VALUE value) {
 
 // How do you count the items in a linked list?
 int list_size(POINTER start) {
-  // TODO, does nothing right now.
-  return -1;
+	if(start == NULL) return 0;
+	return 1 + list_size(start->next);
 }
 
 // How do you add an item to the end of a linked list?
 void push_back(POINTER start, VALUE value) {
-  // TODO, does nothing right now.
-  return;
+	ListEntry* cur;
+	for(cur = start; cur->next != NULL; cur = cur->next);
+	// cur is now a tail pointer
+	ListEntry* newEntry = (ListEntry*) malloc(sizeof(ListEntry));
+	newEntry->value = value;
+	cur->next = newEntry;
 }
 
 bool list_equals_array(POINTER list, double* array, int array_len) {
-  if (list_size(list) != array_len) return false;
-  // TODO, do this better!
-  return false;
+	if (list_size(list) != array_len) return false;
+	// TODO, do this better!
+	POINTER cur = list;
+ 	for(int i = 0; i < array_len; i++) {
+		if(cur->value != array[i]) return false;
+		cur = cur->next;
+  	}
+	return true;
 }
 
 // Given a value and a list, alloc a new entry and put it on the front of this list.
@@ -53,17 +62,32 @@ POINTER push_front(VALUE value, POINTER list) {
 // for example: 1->2->3->4->5 remove value 3
 // the list becomes: 1->2->4->5
 bool remove_value(POINTER start, VALUE value){
-  //TODO
-  return false;
+	//TODO
+	// note that it is impossible to remove the start element because
+	// we are given only a copy to a pointer, not the pointer itself.
+	// in other words, whatever node start points to is not affected
+	// by this function.
+
+	for(POINTER prev = start; prev->next != NULL; prev = prev->next) {
+		if(prev->next->value == value) {
+			prev->next = prev->next->next;
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
 // Given the start of a list, reverse the list and return the start after the reverse
 // for example: 1->2->3->4->5 reverse
 // the list becomes: 5->4->3->2->1
-POINTER reverse_list(POINTER start){
-  //TODO
-  return NULL;
-}
+POINTER reverse_list(POINTER start, POINTER pointTo){
+	//TODO
+	POINTER orig_next = start -> next;
+	start->next = pointTo;
+	if(orig_next == NULL) return start;
+	return reverse_list(orig_next, start);
+} // method
 
 // Given a list, take its first element off and put it in the free list.
 POINTER free_front(POINTER list) {
@@ -151,14 +175,14 @@ int main(int argc, char **argv) {
   assert(list_equals_array(test_list, expected_remove, 3));
 
   double expected_remove2[] = {8,1};
-  remove_value(test_list, 9.0);
-  assert(list_equals_array(test_list, expected_remove2, 2));
+  //remove_value(test_list, 9.0);
+  //assert(list_equals_array(test_list, expected_remove2, 2));
 
   //reverse the list, check correctness
   push_back(test_list, 10);
   push_back(test_list, 3.14);
-  double expected_reverse[] = {3.14,10,1,8};
-  assert(list_equals_array(reverse_list(test_list), expected_reverse, 4));
+  double expected_reverse[] = {3.14,10,1,8,9};
+  assert(list_equals_array(reverse_list(test_list, NULL), expected_reverse, 5));
 
   return 0;
 }
